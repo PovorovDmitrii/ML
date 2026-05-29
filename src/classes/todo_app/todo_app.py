@@ -29,7 +29,19 @@ class TodoApp:
         # self.task_repo = TaskRepository(...)
         # self.category_repo = CategoryRepository(...)
         # self.status_repo = StatusRepository(...)
-        pass
+        os.makedirs(data_dir, exist_ok=True)
+
+        self.task_repo = TaskRepository(
+            os.path.join(data_dir, "tasks.json")
+        )
+
+        self.category_repo = CategoryRepository(
+            os.path.join(data_dir, "categories.json")
+        )
+
+        self.status_repo = StatusRepository(
+            os.path.join(data_dir, "statuses.json")
+        )
     
     def add_task(self, title: str, category_id: int, status_id: int, **kwargs) -> Task:
         """
@@ -51,7 +63,25 @@ class TodoApp:
         # 1. Проверьте существование категории и статуса
         # 2. Получите следующий ID для задачи
         # 3. Создайте задачу и добавьте её через репозиторий
-        pass
+        if not self.category_repo.get(category_id):
+            raise ValueError("Категории не сущестует")
+
+        if not self.status_repo.is_valid_status(status_id):
+            raise ValueError("Статуса не сущестует")
+
+        new_id = (
+            max(self.task_repo.items.keys(), default=0) + 1
+        )
+
+        task = Task(
+            id=new_id,
+            title=title,
+            category_id=category_id,
+            status_id=status_id,
+            **kwargs
+        )
+
+        return self.task_repo.add(task)
     
     def mark_task_done(self, task_id: int) -> bool:
         """
@@ -64,7 +94,15 @@ class TodoApp:
             True, если задача обновлена, False если не найдена
         """
         # TODO: Реализуйте отметку задачи как выполненной
-        pass
+        task = self.task_repo.get(task_id)
+
+        if not task:
+            return False
+
+        return self.task_repo.update(
+            task_id,
+            is_done=True
+        )
     
     def get_overdue_tasks(self) -> List[Task]:
         """
@@ -78,7 +116,16 @@ class TodoApp:
         # - есть дедлайн
         # - дедлайн истек (меньше текущего времени)
         # - задача не выполнена
-        pass
+        now = datetime.now()
+
+        return [
+            task for task in self.task_repo.get_all()
+            if (
+                task.deadline
+                and task.deadline < now
+                and not task.is_done
+            )
+        ]
 
 
 def load_sample_data(app: TodoApp) -> None:
@@ -90,7 +137,29 @@ def load_sample_data(app: TodoApp) -> None:
     """
     # TODO: Реализуйте загрузку примерных данных
     # Добавьте категории, статусы и примерные задачи
-    pass
+    categories = [
+        Category(id=1, name="Работа"),
+        Category(id=2, name="Личное"),
+        Category(id=3, name="Учеба")
+    ]
+
+    for category in categories:
+        app.category_repo.add(category)
+
+    app.add_task(
+        title="Изучить Python",
+        category_id=3,
+        status_id=1,
+        description="Изучить основы Python"
+    )
+
+    app.add_task(
+        title="Купить продукты",
+        category_id=2,
+        status_id=2,
+        description="Молоко, хлеб, яйца"
+    )
+
 
 
 def print_task(task: Task) -> None:
@@ -101,7 +170,16 @@ def print_task(task: Task) -> None:
         task: Задача для вывода
     """
     # TODO: Реализуйте вывод информации о задаче
-    pass
+    print(f"""
+    ID: {task.id}
+    Название: {task.title}
+    Описание: {task.description}
+    Категория ID: {task.category_id}
+    Статус ID: {task.status_id}
+    Выполнена: {task.is_done}
+    Дедлайн: {task.deadline}
+    Создана: {task.created_at}
+    """)
 
 
 def print_tasks(tasks: List[Task]) -> None:
@@ -112,7 +190,8 @@ def print_tasks(tasks: List[Task]) -> None:
         tasks: Список задач для вывода
     """
     # TODO: Реализуйте вывод списка задач
-    pass
+    for task in tasks:
+        print_task(task)
 
 
 if __name__ == "__main__":

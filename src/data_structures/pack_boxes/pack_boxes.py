@@ -17,5 +17,22 @@ def pack_boxes(items, limit):
     :param limit: Максимальный вес коробки
     :return: Список коробок (список списков)
     """
-    # TODO: Реализуйте функцию
-    pass
+    
+    boxes = []
+    current_box = []
+    current_weight = 0
+
+    for item in items:
+        if item > limit:
+            continue
+        if current_weight + item <= limit:
+            current_box.append(item)
+            current_weight += item
+        else:
+            boxes.append(current_box)
+            current_box = [item]
+            current_weight = item
+    if current_box:
+        boxes.append(current_box)
+    return boxes
+    

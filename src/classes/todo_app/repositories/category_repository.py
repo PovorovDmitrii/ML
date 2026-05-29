@@ -5,8 +5,14 @@ from typing import Optional
 class CategoryRepository(BaseRepository[Category]):
     def __init__(self, file_path: str):
         # TODO: Реализуйте инициализацию
-        pass
+        super().__init__(file_path, Category)
+        
 
     def get_by_name(self, name: str) -> Optional[Category]:
         # TODO: Реализуйте поиск по имени
-        pass
+        for category in self._data.values():
+            if category.name.lower() == name.lower():
+                return category
+        
+        return None
+        

@@ -10,9 +10,21 @@ def sort_segments(segments):
         список отрезков, отсортированных по убыванию длины
     """
     # TODO: Реализуйте функцию
-    pass
+    length_dict = {}
+    for start, end in segments:
+        length = end - start
+
+        if length not in length_dict:
+            length_dict[length] = []
+
+        length_dict[length].append((start, end))
+
+    result = []
+    for length in sorted(length_dict.keys(), reverse=True):
+        result.extend(length_dict[length])
+    return result
 
 # альтернативный простой вариант
 def sort_segments_simple(segments):
     # TODO: Реализуйте простой вариант сортировки
-    pass
+    return sorted(segments, key=lambda x: x[1] - x[0], reverse=True)

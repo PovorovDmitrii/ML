@@ -1,4 +1,4 @@
-import math
+import math as m
 
 def find_twin_pairs(X, threshold):
     """
@@ -11,5 +11,17 @@ def find_twin_pairs(X, threshold):
     Возвращает:
     Список кортежей (i, j, distance), где i < j и distance < threshold
     """
-    # TODO: Реализуйте функцию
-    pass
+    result = []
+
+    n = len(X)
+
+    for i in range(n):
+        for j in range(i + 1, n):
+            dist = sum((a - b) ** 2 for a, b in zip(X[i], X[j])) ** 0.5
+
+            if dist <= threshold:
+                result.append((i, j, dist))
+
+    return result
+
+    

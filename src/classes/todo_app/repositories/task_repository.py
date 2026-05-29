@@ -5,14 +5,19 @@ from src.classes.todo_app.repositories.base_repository import BaseRepository
 class TaskRepository(BaseRepository[Task]):
     def __init__(self, file_path: str):
         # TODO: Реализуйте инициализацию
-        pass
+         super().__init__(file_path, Task)
 
     def get_by_category(self, category_id: int) -> List[Task]:
         """Get all tasks belonging to a specific category."""
         # TODO: Реализуйте получение задач по категории
-        pass
+        return [task for task in self._data.values()
+            if task.category_id == category_id
+        ]
+
 
     def get_by_status(self, status_id: int) -> List[Task]:
         """Get all tasks with a specific status."""
         # TODO: Реализуйте получение задач по статусу
-        pass
+        return [task for task in self._data.values()
+            if task.status_id == status_id
+        ]
